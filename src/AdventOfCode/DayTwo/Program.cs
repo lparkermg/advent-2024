@@ -25,9 +25,12 @@
             Console.WriteLine($"There are {safeReports} safe reports.");
         }
 
-        private static bool IsReportSafe(Report report)
+        private static bool IsReportSafe(Report report, bool sub = false)
         {
             int[] reportLevels;
+
+            // Remove a single failure to make report valid. 
+
             if (report.Levels.First() > report.Levels.Last())
             {
                 // First is greater than last so we're decsending
@@ -40,21 +43,34 @@
                 // Last is greater than first so we're accending
                 
             }
-
-            for (var i = 0; i < reportLevels.Count() - 1; i++)
+            var isSafe = true;
+            for (var i = 0; i < reportLevels.Length - 1; i++)
             {
                 var reportItem = reportLevels[i];
                 var nextItem = reportLevels[i + 1];
-
+                
                 if(nextItem - reportItem > 3 || nextItem - reportItem < 1)
                 {
-                    return false;
+                    isSafe = false;
                 }
-                
             }
 
+            if (!isSafe && !sub)
+            {
+                for(var i = 0; i < reportLevels.Length; i++)
+                {
+                    var levels = reportLevels.ToList();
+                    levels.RemoveAt(i);
+                    if (IsReportSafe(new Report { Levels = levels }, true))
+                    {
+                        return true;
+                    }
+                }
 
-            return true;
+                return false;
+            }
+
+            return isSafe;
         }
     }
 }
