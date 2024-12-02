@@ -9,7 +9,7 @@
 
             foreach(var report in loadedReports)
             {
-                var levels = report.Split(" ").Select(i => int.Parse(i)).ToArray();
+                var levels = report.Split(" ").Select(i => int.Parse(i)).ToList();
                 reports.Add(new Report { Levels = levels });
             }
 
@@ -46,7 +46,7 @@
                 var reportItem = reportLevels[i];
                 var nextItem = reportLevels[i + 1];
 
-                if(reportItem - nextItem > 3 || reportItem - nextItem < 1)
+                if(nextItem - reportItem > 3 || nextItem - reportItem < 1)
                 {
                     return false;
                 }
