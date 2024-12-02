@@ -2,9 +2,16 @@
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
+            var loadedReports = await File.ReadAllLinesAsync("./data.txt");
             var reports = new List<Report>();
+
+            foreach(var report in loadedReports)
+            {
+                var levels = report.Split(" ").Select(i => int.Parse(i)).ToArray();
+                reports.Add(new Report { Levels = levels });
+            }
 
             var safeReports = 0;
 
@@ -39,7 +46,7 @@
                 var reportItem = reportLevels[i];
                 var nextItem = reportLevels[i + 1];
 
-                if(reportItem - nextItem > 2 || reportItem - nextItem < 0)
+                if(reportItem - nextItem > 3 || reportItem - nextItem < 1)
                 {
                     return false;
                 }
