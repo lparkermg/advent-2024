@@ -22,6 +22,7 @@
 
 
             var distances = new List<int>();
+            var similarity = new List<long>();
             for(var i = 0; i < leftList.Count; i++)
             {
                 var leftItem = leftList[i];
@@ -38,9 +39,11 @@
                 }
 
                 distances.Add(distance);
+                similarity.Add(leftItem * rightList.Where(i => i == leftItem).Count());
             }
 
             Console.WriteLine($"Total Distance for both lists is {distances.Sum()}");
+            Console.WriteLine($"The similarity score for both lists is {similarity.Sum()}");
         }
     }
 }
