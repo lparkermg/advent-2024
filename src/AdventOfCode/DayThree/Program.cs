@@ -10,15 +10,29 @@ namespace DayThree
 
             var data = await File.ReadAllTextAsync("./data.txt");
 
-            var matches = Regex.Matches(data, "mul[(][0-9]{1,3},[0-9]{1,3}[)]").ToList();
+            var matches = Regex.Matches(data, "(don't[(][)])|(do[(][)])|(mul[(][0-9]{1,3},[0-9]{1,3}[)])").ToList();
 
             var result = 0;
 
+            var shouldMul = true;
             foreach(var match in matches)
             {
-                var trimmed = match.Value.Replace("mul(", string.Empty).Replace(")", string.Empty);
-                var split = trimmed.Split(',');
-                result += int.Parse(split[0]) * int.Parse(split[1]);
+                if (match.Value == "don't()")
+                {
+                    shouldMul = false;
+                    continue;
+                }
+                else if(match.Value == "do()")
+                {
+                    shouldMul = true;
+                    continue;
+                }
+                if (shouldMul)
+                {
+                    var trimmed = match.Value.Replace("mul(", string.Empty).Replace(")", string.Empty);
+                    var split = trimmed.Split(',');
+                    result += int.Parse(split[0]) * int.Parse(split[1]);
+                }
             }
             Console.WriteLine($"The result is {result}!");
         }
