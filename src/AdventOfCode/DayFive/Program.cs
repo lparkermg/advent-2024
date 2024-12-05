@@ -11,15 +11,27 @@
             var rules = orderingRulesData.Select(r => new Rule(r)).ToList();
 
             var runningTotal = 0;
+            var incorrectPages = new List<string>();
             foreach (var page in pagesData) 
             {
                 if(TryValidPageOrder(page, rules, out int middlePage))
                 {
                     runningTotal += middlePage;
                 }
+                else
+                {
+                    incorrectPages.Add(page);
+                }
+            }
+
+            var incorrectRunningTotal = 0;
+            foreach (var page in incorrectPages)
+            {
+                incorrectRunningTotal += CorrectPageOrder(page, rules);
             }
             // X|Y if both, X, must be printed before Y
             Console.WriteLine($"The total from the middle pages is {runningTotal}...");
+            Console.WriteLine($"The total from the incorrect chages is {incorrectRunningTotal}...");
         }
 
         static bool TryValidPageOrder(string page, IList<Rule> rules, out int middlePage)
@@ -49,6 +61,18 @@
 
             middlePage = parsedPage[(int)parsedPage.Count / 2];
             return true;
+        }
+
+        static int CorrectPageOrder(string page, IList<Rule> rules)
+        {
+            var parsedPage = page.Split(",").Select(p => int.Parse(p)).ToList();
+
+            var filteredRules = rules.Where(r => parsedPage.Contains(r.FirstNumber) && parsedPage.Contains(r.SecondNumber)).GroupBy(r => r.FirstNumber).ToDictionary(r => r.Key, i => i.Select(y => y.SecondNumber).ToList());
+            
+
+            parsedPage.Sort((a, b) => filteredRules.TryGetValue(a, out var ato) && ato.Contains(b) ? -1 : 1);
+            TryValidPageOrder(string.Join(',', parsedPage), rules, out var midPage);
+            return midPage;
         }
     }
 }
